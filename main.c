@@ -46,21 +46,19 @@ int main(int argc, char *argv[]) {
             token = strtok(NULL, " ");
             token_cnt++;
         }
-        char tmp[1024] = "/bin/";
-        strcat(tmp, args[0]);
-        args[0] = tmp;
-        //strcpy(args[0], tmp);
 
-        for(int i = 0 ;i < token_cnt; i++) {
-            //printf("%s\n", args[i]);
-            // /usr/bin
-            // "/usr/bin" + "/" + args[0]
+        char cmd_dir[1024];
+        for(int i = 0; i < path_cnt; i++) {
+            sprintf(cmd_dir, "%s/%s", paths[i], cmd);
+            if (access(cmd_dir, F_OK) == 0) {
+                break;
+            }
         }
 
         int rc = fork();
         if (rc == 0) {
-            if (execv(args[0], args) == -1) {
-                printf("%s: this command is not found\n", cmd);
+            if (execv(cmd_dir, args) != 0) {
+                printf("%s: command doesn't exists\n", cmd);
             }
         } else {
             rc = wait(NULL);
