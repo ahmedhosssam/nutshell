@@ -20,7 +20,7 @@ int main(int argc, char *argv[]) {
     }
 
     while (1) {
-        printf(">> ");
+        printf("\e[0;32m>> \033[000m");
         char *input = NULL;
         size_t bufsize = 0; // to make getline() allocate memory as needed
         ssize_t chars = 0;
