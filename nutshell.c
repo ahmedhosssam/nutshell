@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <unistd.h>
+#include <fcntl.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/wait.h>
@@ -34,13 +35,21 @@ int main(int argc, char *argv[]) {
         }
 
         char *args[1024] = {};
-
         char *token;
         char *cmd; // the command itself
-        
+        char *file = NULL;
         int token_cnt = 0;
-        
+        int redirection_found = 0;
+
         while ((token = strsep(&input, " ")) != NULL) {
+            if (redirection_found == 1) {
+                file = token;
+                break;
+            }
+            if (strcmp(token, ">") == 0) {
+                redirection_found = 1;
+                continue;
+            }
             args[token_cnt] = token;
             token_cnt++;
         }
@@ -77,6 +86,10 @@ int main(int argc, char *argv[]) {
 
         int rc = fork();
         if (rc == 0) {
+            if (redirection_found) {
+                int fd = open(file, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+                dup2(fd, STDOUT_FILENO);
+            }
             if (execv(cmd_dir, args) != 0) {
                 printf("%s: command doesn't exists\n", cmd);
             }
