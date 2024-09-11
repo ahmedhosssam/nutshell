@@ -21,6 +21,7 @@ int main(int argc, char *argv[]) {
 
     while (1) {
         printf("\e[0;32m>> \033[000m");
+
         char *input = NULL;
         size_t bufsize = 0; // to make getline() allocate memory as needed
         ssize_t chars = 0;
@@ -45,6 +46,26 @@ int main(int argc, char *argv[]) {
         }
 
         cmd = args[0];
+
+        char *exitstr = "exit";
+        char *cdstr = "cd";
+
+        if (strcmp(cmd, exitstr) == 0) {
+            exit(0);
+        }
+
+        if (strcmp(cmd, cdstr) == 0) {
+            if (token_cnt == 1 || token_cnt > 2) {
+                printf("cd takes only one argument\nexample: `cd ..` or `cd src`\n");
+                continue;
+            }
+            char directory[1024] = "./";
+            strcat(directory, args[1]);
+            if(chdir(directory) != 0) {
+                printf("error: %s is not a directory\n", args[1]);
+            }
+            continue;
+        }
 
         char cmd_dir[1024];
         for(int i = 0; i < path_cnt; i++) {
