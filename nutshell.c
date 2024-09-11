@@ -36,16 +36,15 @@ int main(int argc, char *argv[]) {
 
         char *token;
         char *cmd; // the command itself
-        token = strtok(input, " ");
-        cmd = token;
+        
         int token_cnt = 0;
-        args[token_cnt] = token;
-
-        while (token != NULL) {
+        
+        while ((token = strsep(&input, " ")) != NULL) {
             args[token_cnt] = token;
-            token = strtok(NULL, " ");
             token_cnt++;
         }
+
+        cmd = args[0];
 
         char cmd_dir[1024];
         for(int i = 0; i < path_cnt; i++) {
